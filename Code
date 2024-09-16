@@ -1,0 +1,114 @@
+#define BLYNK_TEMPLATE_ID "TMPL3KQk1n605"
+#define BLYNK_TEMPLATE_NAME "water 1"
+#define BLYNK_AUTH_TOKEN "z7F4q6aQPUXqjDEiv7w2bpmk8bBXSafQ"
+
+#include <OneWire.h>
+#include <SPI.h>
+#include <BlynkSimpleEsp8266.h>
+#include <DHT.h>
+#include <DallasTemperature.h>
+
+#define ONE_WIRE_BUS D2
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+#define DHTPIN 2
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+SimpleTimer timer;
+
+// Define your Wi-Fi credentials
+char ssid[] = "iQOO Z7 PRO";
+char pass[] = "11111111";
+
+// Define the pin for motor control
+#define MOTOR_PIN D1 // Adjust D1 to the GPIO pin you're using for motor control
+
+// Variable to store motor state
+bool motorState = false;
+
+void sendSensor()
+{
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
+
+    if (isnan(h) || isnan(t)) {
+        Serial.println("Failed to read from DHT sensor!");
+        return;
+    }
+
+    Serial.print("Humidity: ");
+    Serial.print(h);
+    Serial.println(" %");
+
+    Serial.print("Temperature: ");
+    Serial.print(t);
+    Serial.println(" *C");
+
+    Blynk.virtualWrite(V5, h); // V5 is for Humidity
+    Blynk.virtualWrite(V6, t); // V6 is for Temperature
+}
+
+void setup()
+{
+    Serial.begin(9600);
+    dht.begin();
+    
+    pinMode(MOTOR_PIN, OUTPUT); // Set motor pin as an output
+    digitalWrite(MOTOR_PIN, LOW); // Ensure motor is off initially
+
+    timer.setInterval(1000L, sendSensor);
+    Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+    sensors.begin();
+}
+
+int sensor = 0;
+int output = 0;
+
+void sendTemps()
+{
+    sensor = analogRead(A0);
+    output = (145 - map(sensor, 0, 1023, 0, 100)); // Adjust the 145 as needed
+    delay(1000);
+    sensors.requestTemperatures();
+    float temp = sensors.getTempCByIndex(0);
+
+    Serial.print("Soil Moisture: ");
+    Serial.print(output);
+    Serial.println("%");
+
+    Blynk.virtualWrite(V1, temp);
+    Blynk.virtualWrite(V2, output);
+    delay(1000);
+}
+
+// BLYNK_WRITE function to handle virtual pin writes
+BLYNK_WRITE(V3) // V3 is the virtual pin connected to the pump button
+{
+    motorState = param.asInt(); // Get the value of the virtual pin
+    if (motorState) {
+        digitalWrite(MOTOR_PIN, HIGH); // Turn motor on
+        Serial.println("Pump turned ON by Blynk");
+    } else {
+        digitalWrite(MOTOR_PIN, LOW); // Turn motor off
+        Serial.println("Pump turned OFF by Blynk");
+    }
+}
+
+void loop()
+{
+    Blynk.run();
+    timer.run();
+    sendTemps();
+    
+    if (Serial.available() > 0) {
+        char command = Serial.read();
+        if (command == '1') {
+            digitalWrite(MOTOR_PIN, HIGH); // Turn motor on
+            Serial.println("Pump turned ON by Serial Command");
+        } else if (command == '0') {
+            digitalWrite(MOTOR_PIN, LOW); // Turn motor off
+            Serial.println("Pump turned OFF by Serial Command");
+        }
+    }
+}
