@@ -5,11 +5,9 @@ This project presents an innovative approach to automate and optimize plant wate
 
 Furthermore, a mobile app provides a user-friendly interface to monitor real-time sensor data, receive alerts, and manually control the watering system. The integration of AI, IoT, and cloud technologies enhances the scalability, flexibility, and intelligence of the plant watering system, contributing to sustainable and automated agricultural practices
 
-# Programming Languages Expertise:
-
-# Required knowledge on: Embedded C/ C++, Python Scripting
-
 # Software Used:
+Embedded C/ C++
+Python Scripting
 Arduino IDE
 Blynk IoT platform
 
