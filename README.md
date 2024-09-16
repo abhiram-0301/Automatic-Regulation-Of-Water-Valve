@@ -21,3 +21,6 @@ Furthermore, a mobile app provides a user-friendly interface to monitor real-tim
 - Power Supply                                          
 - Connecting Wires                                     
 
+# Block Diagram
+![Screenshot_16-9-2024_13510_](https://github.com/user-attachments/assets/a0633286-4c77-4915-b531-656196837756)
+
