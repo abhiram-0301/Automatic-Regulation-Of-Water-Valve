@@ -22,5 +22,5 @@ Furthermore, a mobile app provides a user-friendly interface to monitor real-tim
 - Connecting Wires                                     
 
 # Block Diagram
-![Screenshot_16-9-2024_13510_](https://github.com/user-attachments/assets/a0633286-4c77-4915-b531-656196837756)
+![Screenshot_16-9-2024_13735_](https://github.com/user-attachments/assets/b2083848-6cbb-49df-9e45-d5d22d7f6571)
 
